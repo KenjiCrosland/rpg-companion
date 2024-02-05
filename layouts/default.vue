@@ -13,7 +13,7 @@
             </ul>
         </header>
         <div class="mainContent">
-            <slot />
+            <NuxtPage />
         </div>
         <footer>
             <h1>Footer</h1>

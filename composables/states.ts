@@ -1,0 +1,1 @@
+export const isAuthenticated = () => useState<boolean>('authenticated', () => false)

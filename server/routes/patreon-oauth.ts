@@ -4,11 +4,12 @@ const CLIENT_ID = process.env.PATREON_CLIENT_ID;
 const CLIENT_SECRET = process.env.PATREON_CLIENT_SECRET;
 const CAMPAIGN_ID = process.env.PATREON_CAMPAIGN_ID;
 const TIER_ID = process.env.PATREON_TIER_ID;
-const redirectURL = 'http://localhost:3000/patreon-oauth';
+const redirectURL = 'http://localhost:3000/oauth';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const oauthGrantCode = query.code as string;
+
   const getPatreonAccessToken = async () => {
     const response = await fetch('https://www.patreon.com/api/oauth2/token', {
       method: 'POST',
@@ -42,15 +43,13 @@ export default defineEventHandler(async (event) => {
     const data = await response.json();
     return data;
   };
-  
+
   const userData = await patreonAPIClient();
-  console.log(userData);
+  
   function containsMasterWorldshaperTier(obj): boolean {
-    // Destructure to get the 'included' array directly from the object
     if (!obj.included) return false;
     const { included } = obj;
 
-    // Use some() to check if any object in 'included' matches your criteria
     return included.some(
       (item) =>
         item.attributes.title === 'Master Worldshaper' &&
@@ -58,7 +57,11 @@ export default defineEventHandler(async (event) => {
         item.type === 'tier',
     );
   }
-  console.log('WELCOME PATRON!', containsMasterWorldshaperTier(userData));
 
-  return sendRedirect(event, '/');
+  if (containsMasterWorldshaperTier(userData)) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(userData),
+    };
+  }
 });

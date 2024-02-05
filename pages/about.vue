@@ -5,5 +5,8 @@
 </template>
 
 <script setup lang="ts">
-    // Add your TypeScript code here
+import { useRoute } from '#imports';
+const route = useRoute();
+console.log("ROUTE", route);
+console.log("PATH", route.fullPath);
 </script>

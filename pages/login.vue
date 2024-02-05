@@ -20,7 +20,6 @@ import { storeToRefs } from 'pinia'; // import storeToRefs helper hook from pini
 import { useAuthStore } from '~/store/auth'; // import the auth store we just created
 const { authenticateUser } = useAuthStore(); // use authenticateUser action from  auth store
 const { authenticated } = storeToRefs(useAuthStore()); // make authenticated state reactive with storeToRefs
-
 const user = ref({
     username: 'kminchelle',
     password: '0lelplR',
@@ -30,14 +29,14 @@ const router = useRouter();
 const login = async () => {
     await authenticateUser(user.value); // call authenticateUser and pass the user object
     // redirect to homepage if user is authenticated
-    if (authenticated) {
+    if (authenticated.value) {
         router.push('/');
     }
 };
 
 const loginWithPatreon = () => {
   const clientId = 'WX2xQlmUVgr6euAVbA8MczBAlFMcjGc5CUGwD7xW2RfZf2ah1zzcSMZOvs9ZE98d';
-  const redirectUri = encodeURIComponent('http://localhost:3000/patreon-oauth')
+  const redirectUri = encodeURIComponent('http://localhost:3000/oauth')
 
   const authUrl = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=identity%20identity%5Bemail%5D`
 
