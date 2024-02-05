@@ -28,9 +28,8 @@ export default defineEventHandler(async (event) => {
     const data = await response.json();
     return data;
   };
-  const accessData = await getPatreonAccessToken();
 
-  const patreonAPIClient = async () => {
+  const patreonAPIClient = async (accessData) => {
     const response = await fetch(
       'https://www.patreon.com/api/oauth2/v2/identity?include=memberships.currently_entitled_tiers,memberships.campaign&fields%5Bmember%5D=currently_entitled_amount_cents&fields%5Buser%5D=email,first_name,full_name,last_name,is_email_verified&fields%5Btier%5D=title',
       {
@@ -44,24 +43,39 @@ export default defineEventHandler(async (event) => {
     return data;
   };
 
-  const userData = await patreonAPIClient();
-  
-  function containsMasterWorldshaperTier(obj): boolean {
-    if (!obj.included) return false;
-    const { included } = obj;
+  function evaluateUserTier(obj): { hasFullAccess: boolean; userData: any } {
+    let hasFullAccess = false;
+    if (obj.included) {
+      const { included } = obj;
+      hasFullAccess = included.some(
+        (item) =>
+          item.attributes.title === 'Master Worldshaper' &&
+          item.id === TIER_ID &&
+          item.type === 'tier',
+      );
+    }
 
-    return included.some(
-      (item) =>
-        item.attributes.title === 'Master Worldshaper' &&
-        item.id === TIER_ID &&
-        item.type === 'tier',
-    );
+    return { hasFullAccess, userData: obj };
   }
 
-  if (containsMasterWorldshaperTier(userData)) {
+  try {
+    const accessData = await getPatreonAccessToken();
+    const userDataFromPatreon = await patreonAPIClient(accessData);
+    const { hasFullAccess, userData } = evaluateUserTier(userDataFromPatreon);
     return {
       statusCode: 200,
-      body: JSON.stringify(userData),
+      body: JSON.stringify({
+        ...userData,
+        hasFullAccess,
+      }),
+    };
+  } catch (error) {
+    console.error('error!', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'There was an error connecting to Patreon. Please try again.',
+      }),
     };
   }
 });
