@@ -18,6 +18,9 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'; // import storeToRefs helper hook from pinia
 import { useAuthStore } from '~/store/auth'; // import the auth store we just created
+import { useRoute } from '#imports';
+const route = useRoute();
+const code = route.query.code;
 const { authenticateUser } = useAuthStore(); // use authenticateUser action from  auth store
 const { authenticated } = storeToRefs(useAuthStore()); // make authenticated state reactive with storeToRefs
 const user = ref({
@@ -36,11 +39,21 @@ const login = async () => {
 
 const loginWithPatreon = () => {
   const clientId = 'WX2xQlmUVgr6euAVbA8MczBAlFMcjGc5CUGwD7xW2RfZf2ah1zzcSMZOvs9ZE98d';
-  const redirectUri = encodeURIComponent('http://localhost:3000/oauth')
+  const redirectUri = encodeURIComponent('http://localhost:3000/login')
 
   const authUrl = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=identity%20identity%5Bemail%5D`
 
   window.location.href = authUrl
+}
+
+if (code) {
+  // Handle OAuth flow
+  const { data } = await useFetch('/patreon-oauth', {
+      query: { 'code': code }
+  });
+  console.log("OAuth Data:", data.value);
+} else {
+  console.log("No code");
 }
 </script>
   

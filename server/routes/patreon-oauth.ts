@@ -4,7 +4,7 @@ const CLIENT_ID = process.env.PATREON_CLIENT_ID;
 const CLIENT_SECRET = process.env.PATREON_CLIENT_SECRET;
 const CAMPAIGN_ID = process.env.PATREON_CAMPAIGN_ID;
 const TIER_ID = process.env.PATREON_TIER_ID;
-const redirectURL = 'http://localhost:3000/oauth';
+const redirectURL = 'http://localhost:3000/login';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
