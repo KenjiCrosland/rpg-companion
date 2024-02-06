@@ -19,6 +19,7 @@
 import { storeToRefs } from 'pinia'; // import storeToRefs helper hook from pinia
 import { useAuthStore } from '~/store/auth'; // import the auth store we just created
 import { useRoute } from '#imports';
+import { sayFoo } from '~/composables/use-firebase';
 const route = useRoute();
 const code = route.query.code;
 const { authenticateUser } = useAuthStore(); // use authenticateUser action from  auth store
@@ -55,5 +56,6 @@ if (code) {
 } else {
   console.log("No code");
 }
+
 </script>
   

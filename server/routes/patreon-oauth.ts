@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-
+//TODO: use runtime env vars
 const CLIENT_ID = process.env.PATREON_CLIENT_ID;
 const CLIENT_SECRET = process.env.PATREON_CLIENT_SECRET;
 const CAMPAIGN_ID = process.env.PATREON_CAMPAIGN_ID;
